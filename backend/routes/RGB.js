@@ -148,14 +148,8 @@ const colors = {
   'white': 'FFFFFF',
   'whitesmoke': 'F5F5F5',
   'yellow': 'FFFF00',
-  'yellowgreen': '9ACD32',
-  'off': '000000',
-  'on': 'ffffff'
-
+  'yellowgreen': '9ACD32'
 };
-let d = new Date();
-let m = d.getMilliseconds()
-glow = false
 const colorsRGB = {}
 for (let key in colors) {
   if (colors.hasOwnProperty(key)) {
@@ -204,69 +198,26 @@ let data = {
 };
 
 /* GET users listing. */
-router.get('/data', function (req, res, next) {
-  glow = false;
-  let query = req.query;
-  if (req.query.color) {
-    if (colorsRGB[query.color.toLowerCase().replace(' ', '')] != undefined) {
-      data = colorsRGB[query.color.toLowerCase().replace(' ', '')]
-      console.log(data)
-
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Vary", "Origin");
-      res.json(data);
-    } else res.end("Couldn't find color")
-  } else res.end("Please set color query string parameter")
+router.get('/rgb', function (req, res, next) {
+  try {
+    if (req.query.r && req.query.g && req.query.b) {
+      data = {
+        r: parseInt(req.query.r),
+        g: parseInt(req.query.g),
+        b: parseInt(req.query.b),
+      }
+      res.end(r.toString(16) + g.toString(16) + b.toString(16))
+    }
+  } else res.end("Please set red, green, blue query string parameter")
+} catch (e) {
+  res.send(e)
+}
 });
 
 router.get('/', (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Vary", "Origin");
-  if (glow) {
-    let base100 = (Number(new Date()) % 1000).toString();
-    console.log(base100)
-    data = {
-      r: parseInt(base100.substring(0, 1) * 100),
-      g: parseInt(base100.substring(1, 2) * 100),
-      b: parseInt(base100.substring(2, 3) * 100)
-    }
-  }
   res.json(data);
 });
 
-router.get('/rgb', function (req, res, next) {
-  glow = false;
-  try {
-    if (req.query.r && req.query.g && req.query.b) {
-      data = {
-        r: parseInt(req.query.r),
-        g: parseInt(req.query.g),
-        b: parseInt(req.query.b),
-      }
-      res.end("Success")
-
-    } else res.end("Please set red, green, blue query string parameter")
-
-  } catch (e) {
-    res.end(e)
-  }
-});
-router.get('/glow', function (req, res, next) {
-  glow = true;
-  m = d.getMilliseconds()
-  try {
-    if (req.query.r && req.query.g && req.query.b) {
-      data = {
-        r: parseInt(req.query.r),
-        g: parseInt(req.query.g),
-        b: parseInt(req.query.b),
-      }
-      res.end("Success")
-
-    } else res.end("Please set red, green, blue query string parameter")
-
-  } catch (e) {
-    res.end(e)
-  }
-});
 module.exports = router;
