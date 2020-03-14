@@ -222,15 +222,6 @@ router.get('/data', function (req, res, next) {
 router.get('/', (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Vary", "Origin");
-  if (glow) {
-    let base100 = (Number(new Date()) % 1000).toString();
-    console.log(base100)
-    data = {
-      r: parseInt(base100.substring(0, 1) * 100),
-      g: parseInt(base100.substring(1, 2) * 100),
-      b: parseInt(base100.substring(2, 3) * 100)
-    }
-  }
   res.json(data);
 });
 
@@ -269,4 +260,27 @@ router.get('/glow', function (req, res, next) {
     res.end(e)
   }
 });
+var r = 1000,
+  g = 0,
+  b = 0;
+
+setInterval(function () {
+  if (r > 0 && b == 0) {
+    r--;
+    g++;
+  }
+  if (g > 0 && r == 0) {
+    g--;
+    b++;
+  }
+  if (b > 0 && g == 0) {
+    r++;
+    b--;
+  }
+  if (glow) data = {
+    r: r,
+    g: g,
+    b: b
+  }
+}, 10);
 module.exports = router;
